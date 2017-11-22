@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>利用Vue-resource的交互</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<script type="text/javascript" src="vue-resource@1.3.4.js"></script>
+</head>
+<style type="text/css">
+	*{
+		margin:0px;
+		padding:0px;
+	}
+	#app{
+		margin:0 auto;
+		width:300px;
+	}
+	#seo{
+		width:304px;
+		height:40px;
+		font-size: 16px;
+		border:1px solid #ccc;
+		border-radius: 6px;
+		box-shadow: 2px 2px 2px #ccc;
+	}
+	h2{
+		width: 100%;
+		height:50px;
+		line-height: 50px;
+		color:#ff6600;
+		text-align: center;
+	}
+	ul{
+		list-style: none;
+	}
+	ul li{
+		width:300px;
+		height:30px;
+		line-height: 30px;
+		border-bottom: 1px solid #8dafe6;
+		border-left: 1px solid #8dafe6;
+		border-right: 1px solid #8dafe6;
+		padding-left: 4px;
+	}
+	ul li.selected{
+		background: #c0ee8a;
+		color: #ff6600;
+	}
+	p{
+		width:100%;
+		height:30px;
+		line-height: 30px;
+		color: #ccc;
+	}
+</style>
+<body>
+	<div id="app">
+		<h2>百度搜索</h2>
+		<input type="text" name="seo" id="seo" @keyup="jsonp($event)" v-model="inputData" @keydown.down.prevent="changeDown()"
+		@keydown.up.prevent="changeUp()"
+		@keydown.enter="open()">
+		<ul>
+			<li :class="{selected:nowIndex==myData.indexOf(item)}" v-for="item of myData"
+			@mouseenter="change(item)"
+			@mouseleave="nowIndex=-1"
+			@click="open()">{{item}}</li>
+		</ul>
+		<p v-if="myData.length==0">暂无获取的数据</p>
+	</div>
+	<script type="text/javascript">
+		new Vue({
+			el:"#app",
+			data:{
+				inputData:"",
+				myData:'',
+				nowIndex:-1
+			},
+			methods:{
+				open(){
+					window.open("https://www.baidu.com/s?wd="+this.inputData);
+				},
+				change(item){
+					this.nowIndex=this.myData.indexOf(item);
+					this.inputData=this.myData[this.nowIndex];
+				},
+				changeDown(){
+					this.nowIndex=this.nowIndex<this.myData.length-1?++this.nowIndex:0;
+					this.inputData=this.myData[this.nowIndex];
+					
+				},
+				changeUp(){
+					this.nowIndex=this.nowIndex>0?--this.nowIndex:this.myData.length-1;
+					this.inputData=this.myData[this.nowIndex];
+				},
+				/*get(){
+					this.$http.get("test.json").then(function(res){
+						this.myData = res.data;
+					},function(res){
+						new Error(res.status);
+					});
+				},
+				post(){
+					this.$http.post("test.json",{
+						emulateJSON:true
+					}).then(function(res){
+						console.log(res.data);
+					},function(res){
+						new Error(res.status);
+					});
+				},*/
+				jsonp(ev){
+					if(ev.keyCode==38||ev.keyCode==40)return;
+					this.$http.jsonp("https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su",{
+						params:{
+							wd:this.inputData
+						},
+						jsonp:'cb'
+					}).then(function(res){
+						this.myData = res.data.s;
+					},function(res){
+						new Error(res.status);
+					});
+					this.nowIndex=-1;
+				}
+				//https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=a&json=1&p=3&sid=1424_21106_25177_20930&req=2&csor=0&cb=jQuery110205041202186089357_1511359127057&_=1511359127060
+			}
+		});
+	</script>
+</body>
+</html>
