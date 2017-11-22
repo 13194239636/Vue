@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="vue.js"></script>
+	<title>模态框组件</title>
+</head>
+<body>
+	<style type="text/css">
+		#alert{
+			width:400px;
+			height:auto;
+			border:1px solid #4fc08d;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		#alert .header{
+			box-sizing: border-box;
+			width:100%;
+			padding:10px;
+			font-size:14px;
+			font-weight: bold;
+			background: #4fc08d;
+		}
+		#alert .content{
+			box-sizing: border-box;
+			width:100%;
+			padding:14px;
+			font-size:12px;
+			word-break: wrap;
+		}
+		#alert .footer{
+			box-sizing: border-box;
+			text-align: right;
+			width:100%;
+			padding:10px 0px 10px 10px;
+		}
+		#alert .footer input{
+			width:70px;
+			height:30px;
+			border:1px solid #4fc08d;
+			border-radius: 14px;
+			cursor: pointer;
+			margin-right:6px;
+		}
+		#alert .footer input[name="ok"]{
+			background: #4fc08d;
+		}
+	</style>
+	<div id="app">
+		<!--
+		model-head
+		-->		
+		<model-alert :model-head='modelHead' :setbut1-val='setbut1Val' :setbut2-val="setbut2Val">
+			<ul slot="showContent">
+				<li v-for="item of list">{{item}}</li>
+			</ul>
+			<input slot="showFooterBefore" type="button" name="reset" :value="setbut3Val">
+			<input slot="showFooterAfter" type="button" name="return" :value="setbut4Val">
+		</model-alert>
+	</div>
+	
+	<script type="text/javascript">
+		Vue.component('model-alert',{
+			props:{
+				modelHead:{
+					type:String,
+					defalut:"这是一个模态框"
+				},
+				setbut1Val:{
+					type:String,
+					defalut:"ok"
+				},
+				setbut2Val:{
+					type:String,
+					defalut:"cancel"
+				}
+			},
+			template:`<div id="alert">
+						<div class="header">{{modelHead}}</div>
+						<div class="content">
+							<slot name="showContent">这是要显示的内容</slot>
+						</div>
+						<div class="footer">
+							<slot name="showFooterBefore"></slot>
+							<input type="button" name="ok" :value="setbut1Val">
+							<input type="button" name="cancel" :value="setbut2Val">
+							<slot name="showFooterAfter"></slot>
+						</div>
+					</div>`
+		})
+		new Vue({
+			el:"#app",
+			data:{
+				modelHead:"错误！！！",
+				setbut1Val:"确定",
+				setbut2Val:"取消",
+				list:[..."123456"],
+				setbut3Val:"重置",
+				setbut4Val:"返回"
+			}
+		})
+	</script>
+</body>
+</html>
